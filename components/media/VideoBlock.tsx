@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { Media } from "@/lib/types";
 import {
-  facebookVideoEmbedSrc,
   isDirectVideoFileUrl,
   isFacebookUrl,
   mediaPublicUrl,
@@ -19,15 +18,12 @@ export function VideoBlock({ media, title }: { media: Media; title: string }) {
     return <ImportedVideo src={fileUrl} title={title} caption={media.caption} />;
   }
 
-  if (externalUrl && isFacebookUrl(externalUrl)) {
-    return <FacebookVideo url={externalUrl} title={title} caption={media.caption} />;
+  // Les liens Facebook ne sont jamais lus ici : le bouton de la fiche chien s’en charge.
+  if (!externalUrl || isFacebookUrl(externalUrl)) {
+    return null;
   }
 
-  if (externalUrl) {
-    return <HostedVideoLink url={externalUrl} title={title} caption={media.caption} />;
-  }
-
-  return null;
+  return <HostedVideoLink url={externalUrl} title={title} caption={media.caption} />;
 }
 
 function ImportedVideo({
@@ -53,44 +49,6 @@ function ImportedVideo({
       </video>
       {caption ? <figcaption className="mt-2 text-sm text-muted">{caption}</figcaption> : null}
     </figure>
-  );
-}
-
-function FacebookVideo({
-  url,
-  title,
-  caption,
-}: {
-  url: string;
-  title: string;
-  caption: string | null;
-}) {
-  const embedSrc = facebookVideoEmbedSrc(url);
-
-  return (
-    <div className="photo-frame min-w-0 rounded-[1.4rem] p-4 sm:p-5">
-      {embedSrc ? (
-        <div className="mb-4 overflow-hidden rounded-xl bg-cream">
-          <iframe
-            title={title}
-            src={embedSrc}
-            className="aspect-video w-full"
-            allow="clipboard-write; encrypted-media; picture-in-picture; web-share"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
-      ) : null}
-      <p className="text-ink-soft">{caption?.trim() || "Vidéo publiée sur Facebook"}</p>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn btn-primary mt-4"
-      >
-        Voir la vidéo sur Facebook
-      </a>
-    </div>
   );
 }
 

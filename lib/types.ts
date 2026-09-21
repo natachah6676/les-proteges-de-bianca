@@ -47,6 +47,7 @@ export type Dog = {
   sterilized: TriState;
   passport: TriState;
   additional_info: string | null;
+  facebook_url: string | null;
   main_photo_id: string | null;
   sort_order: number;
   published: boolean;

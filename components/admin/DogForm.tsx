@@ -169,6 +169,22 @@ export function DogForm({
               <input type="checkbox" name="published" defaultChecked={dog?.published ?? true} />
               Publié sur le site
             </label>
+            <div className="sm:col-span-2">
+              <label className="admin-label" htmlFor="facebook_url">
+                Lien Facebook du chien
+              </label>
+              <p className="mb-2 text-sm text-muted">
+                Album, publication ou page Facebook consacrée à ce chien.
+              </p>
+              <input
+                id="facebook_url"
+                name="facebook_url"
+                type="url"
+                className="admin-input"
+                defaultValue={dog?.facebook_url ?? ""}
+                placeholder="https://www.facebook.com/..."
+              />
+            </div>
           </div>
         </section>
 
@@ -266,7 +282,8 @@ export function DogForm({
         <section>
           <h2 className="font-serif text-2xl">Photos et vidéos</h2>
           <p className="mt-1 mb-4 text-sm text-muted">
-            Vous pouvez ajouter autant de fichiers que nécessaire. Choisissez ensuite la photo principale.
+            Ajoutez une vidéo en choisissant un fichier MP4 sur votre ordinateur ou votre téléphone.
+            Elle apparaît ensuite automatiquement dans la galerie du chien.
           </p>
           <MediaUploader
             dogId={dog.id}

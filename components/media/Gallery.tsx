@@ -8,15 +8,24 @@ import { VideoBlock } from "@/components/media/VideoBlock";
 type GalleryProps = {
   items: Media[];
   dogName?: string;
+  photosOnly?: boolean;
+  columnsClassName?: string;
 };
 
-export function Gallery({ items, dogName }: GalleryProps) {
+export function Gallery({
+  items,
+  dogName,
+  photosOnly = false,
+  columnsClassName = "columns-2 gap-3 sm:columns-3 lg:columns-4",
+}: GalleryProps) {
   const photos = items.filter((item) => item.media_type === "photo");
-  const videos = items.filter((item) => item.media_type === "video");
+  const videos = photosOnly
+    ? []
+    : items.filter((item) => item.media_type === "video" && item.storage_path);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  if (items.length === 0) {
-    return (
+  if (photos.length === 0 && videos.length === 0) {
+    return photosOnly ? null : (
       <div className="empty-photo min-h-40 rounded-[1.2rem]">
         <p>Les photos arrivent bientôt.</p>
       </div>
@@ -24,9 +33,9 @@ export function Gallery({ items, dogName }: GalleryProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       {photos.length > 0 ? (
-        <div className="columns-2 gap-3 sm:columns-3 lg:columns-4">
+        <div className={columnsClassName}>
           {photos.map((photo, index) => {
             const src = mediaPublicUrl(photo);
             if (!src) return null;

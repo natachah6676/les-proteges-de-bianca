@@ -86,6 +86,7 @@ export async function saveDogAction(
     is_identified: formData.get("is_identified") === "on",
     is_parasite_treated: formData.get("is_parasite_treated") === "on",
     additional_info: emptyToNull(formData.get("additional_info")),
+    facebook_url: emptyToNull(formData.get("facebook_url")),
     main_photo_id: emptyToNull(formData.get("main_photo_id")),
     sort_order: Number(formData.get("sort_order") || 0),
     published: formData.get("published") === "on",

@@ -110,9 +110,15 @@ export function MediaUploader({
 
       if (uploaded > 0) {
         setMessage(
-          uploaded === 1
-            ? "Le fichier a été ajouté."
-            : `${uploaded} fichiers ont été ajoutés.`,
+          kind === "video"
+            ? uploaded === 1
+              ? dogId
+                ? "La vidéo a été ajoutée à la galerie du chien."
+                : "La vidéo a été ajoutée."
+              : `${uploaded} vidéos ont été ajoutées.`
+            : uploaded === 1
+              ? "Le fichier a été ajouté."
+              : `${uploaded} fichiers ont été ajoutés.`,
         );
         router.refresh();
       }
@@ -145,29 +151,29 @@ export function MediaUploader({
           <p className="mt-2 text-xs text-muted">JPG, PNG ou WebP — {maxPhotoMb} Mo maximum par photo.</p>
         </label>
         <label className="photo-frame block cursor-pointer rounded-2xl p-4">
-          <span className="admin-label">Importer une vidéo</span>
+          <span className="admin-label">Ajouter une vidéo</span>
+          <p className="mt-1 text-sm text-ink-soft">
+            Choisissez un MP4 sur votre ordinateur ou votre téléphone. La vidéo apparaît automatiquement
+            dans la galerie du chien.
+          </p>
           <input
             type="file"
-            accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
-            multiple
-            className="mt-2 block w-full text-sm"
+            accept="video/mp4,.mp4,video/quicktime,.mov,video/webm,.webm"
+            className="mt-3 block w-full text-sm"
             disabled={busy}
             onChange={(event) => {
               void uploadFiles(event.target.files, "video");
               event.target.value = "";
             }}
           />
-          <p className="mt-2 text-xs text-muted">
-            Fichier MP4, WebM ou MOV — {maxVideoMb} Mo maximum. La vidéo sera lue directement sur la fiche.
-          </p>
+          <p className="mt-2 text-xs text-muted">{maxVideoMb} Mo maximum.</p>
         </label>
       </div>
 
       <form action={facebookAction} className="photo-frame rounded-2xl p-4">
-        <p className="admin-label">Ajouter un lien Facebook</p>
+        <p className="admin-label">Lien Facebook (optionnel)</p>
         <p className="mt-1 text-sm text-muted">
-          Collez l’adresse d’une publication ou d’une vidéo Facebook. Ce n’est pas un fichier vidéo : le site
-          l’affichera intégrée si Facebook le permet, sinon via un bouton vers Facebook.
+          Pour une lecture fiable sur le site, préférez l’ajout d’un fichier MP4 ci-dessus.
         </p>
         {dogId ? <input type="hidden" name="dog_id" value={dogId} /> : null}
         <input type="hidden" name="category" value={dogId ? "dog" : category} />
@@ -247,8 +253,16 @@ function MediaAdminCard({
         <div className="grid h-40 place-items-center bg-cream px-4 text-center text-sm text-ink-soft">
           Lien Facebook
         </div>
+      ) : src ? (
+        <video
+          src={src}
+          className="h-40 w-full bg-black object-cover"
+          controls
+          preload="metadata"
+          playsInline
+        />
       ) : (
-        <div className="grid h-40 place-items-center bg-[#2a211c] text-sm text-white">Vidéo importée</div>
+        <div className="grid h-40 place-items-center bg-[#2a211c] text-sm text-white">Vidéo</div>
       )}
       <div className="space-y-2 p-3">
         <form action={saveMediaMetaAction} className="space-y-2">
