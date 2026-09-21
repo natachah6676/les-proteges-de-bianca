@@ -57,7 +57,7 @@ export function Gallery({ items, dogName }: GalleryProps) {
       {videos.length > 0 ? (
         <div>
           <h3 className="font-serif text-2xl">Vidéos</h3>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid max-w-xl gap-4">
             {videos.map((video) => (
               <VideoBlock
                 key={video.id}

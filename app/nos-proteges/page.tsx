@@ -4,13 +4,13 @@ import { DogFilter, EmptyDogs } from "@/components/dogs/DogFilter";
 import { getPublishedDogs } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Nos protégés",
+  title: "Nos protégés à adopter",
   description:
     "Les chiens actuellement accueillis chez Bianca et en recherche de famille.",
 };
 
 export default async function NosProtegesPage() {
-  const dogs = await getPublishedDogs({ statuses: ["available", "reserved"] });
+  const dogs = await getPublishedDogs({ statuses: ["available"] });
 
   return (
     <SiteShell current="/nos-proteges">
@@ -18,7 +18,7 @@ export default async function NosProtegesPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-raspberry">
           À l’adoption
         </p>
-        <h1 className="mt-2 font-serif text-4xl sm:text-5xl">Nos protégés</h1>
+        <h1 className="mt-2 font-serif text-4xl sm:text-5xl">Nos protégés à adopter</h1>
         <p className="mt-4 max-w-2xl text-lg text-ink-soft">
           Ils vivent aujourd’hui chez Bianca, en famille. Les démarches d’adoption
           sont réalisées par notre association partenaire.

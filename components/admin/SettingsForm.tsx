@@ -98,43 +98,23 @@ export function SettingsForm({
           Choisissez une photo déjà envoyée dans Médias. Si aucune n’est choisie, un emplacement neutre
           s’affiche.
         </p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="admin-label" htmlFor="heroMediaId">
-              Photo du bandeau d’accueil
-            </label>
-            <select
-              id="heroMediaId"
-              name="heroMediaId"
-              className="admin-select"
-              defaultValue={settings.heroMediaId ?? ""}
-            >
-              <option value="">Aucune</option>
-              {photos.map((photo) => (
-                <option key={photo.id} value={photo.id}>
-                  {photo.caption || photo.storage_path || photo.id.slice(0, 8)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="admin-label" htmlFor="biancaPhotoId">
-              Photo de Bianca
-            </label>
-            <select
-              id="biancaPhotoId"
-              name="biancaPhotoId"
-              className="admin-select"
-              defaultValue={settings.biancaPhotoId ?? ""}
-            >
-              <option value="">Aucune</option>
-              {photos.map((photo) => (
-                <option key={photo.id} value={photo.id}>
-                  {photo.caption || photo.storage_path || photo.id.slice(0, 8)}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="mt-4">
+          <label className="admin-label" htmlFor="heroMediaId">
+            Photo du bandeau d’accueil
+          </label>
+          <select
+            id="heroMediaId"
+            name="heroMediaId"
+            className="admin-select"
+            defaultValue={settings.heroMediaId ?? ""}
+          >
+            <option value="">Aucune</option>
+            {photos.map((photo) => (
+              <option key={photo.id} value={photo.id}>
+                {photo.caption || photo.storage_path || photo.id.slice(0, 8)}
+              </option>
+            ))}
+          </select>
         </div>
       </section>
 

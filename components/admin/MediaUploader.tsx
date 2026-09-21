@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Media, MediaCategory } from "@/lib/types";
 import { validateMediaFile } from "@/lib/utils";
-import { mediaPublicUrl } from "@/lib/media";
+import { isFacebookUrl, mediaPublicUrl } from "@/lib/media";
 import {
   createExternalVideoAction,
   deleteMediaAction,
@@ -37,6 +37,10 @@ export function MediaUploader({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [facebookState, facebookAction, facebookPending] = useActionState(
+    createExternalVideoAction,
+    null,
+  );
 
   async function uploadFiles(files: FileList | null, kind: "photo" | "video") {
     if (!files?.length) return;
@@ -141,7 +145,7 @@ export function MediaUploader({
           <p className="mt-2 text-xs text-muted">JPG, PNG ou WebP — {maxPhotoMb} Mo maximum par photo.</p>
         </label>
         <label className="photo-frame block cursor-pointer rounded-2xl p-4">
-          <span className="admin-label">Ajouter des vidéos</span>
+          <span className="admin-label">Importer une vidéo</span>
           <input
             type="file"
             accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
@@ -153,37 +157,46 @@ export function MediaUploader({
               event.target.value = "";
             }}
           />
-          <p className="mt-2 text-xs text-muted">MP4, WebM ou MOV — {maxVideoMb} Mo maximum par vidéo.</p>
+          <p className="mt-2 text-xs text-muted">
+            Fichier MP4, WebM ou MOV — {maxVideoMb} Mo maximum. La vidéo sera lue directement sur la fiche.
+          </p>
         </label>
       </div>
 
-      <form action={createExternalVideoAction} className="photo-frame rounded-2xl p-4">
-        <p className="admin-label">Ajouter une vidéo par lien</p>
+      <form action={facebookAction} className="photo-frame rounded-2xl p-4">
+        <p className="admin-label">Ajouter un lien Facebook</p>
+        <p className="mt-1 text-sm text-muted">
+          Collez l’adresse d’une publication ou d’une vidéo Facebook. Ce n’est pas un fichier vidéo : le site
+          l’affichera intégrée si Facebook le permet, sinon via un bouton vers Facebook.
+        </p>
         {dogId ? <input type="hidden" name="dog_id" value={dogId} /> : null}
         <input type="hidden" name="category" value={dogId ? "dog" : category} />
         <label className="sr-only" htmlFor="external_url">
-          URL de la vidéo
+          Lien Facebook
         </label>
-        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input
             id="external_url"
             name="external_url"
             type="url"
             className="admin-input"
-            placeholder="https://"
+            placeholder="https://www.facebook.com/..."
+            required
           />
-          <button type="submit" className="btn btn-ghost shrink-0">
-            Ajouter le lien
+          <button type="submit" className="btn btn-ghost shrink-0" disabled={facebookPending}>
+            {facebookPending ? "Ajout…" : "Ajouter le lien"}
           </button>
         </div>
       </form>
 
-      {error ? (
+      {error || facebookState?.error ? (
         <p className="text-sm text-[var(--danger)]" role="alert">
-          {error}
+          {error || facebookState?.error}
         </p>
       ) : null}
-      {message ? <p className="text-sm text-[var(--ok)]">{message}</p> : null}
+      {message || facebookState?.success ? (
+        <p className="text-sm text-[var(--ok)]">{message || facebookState?.success}</p>
+      ) : null}
       {busy ? <p className="text-sm text-muted">Envoi en cours…</p> : null}
 
       {existing.length === 0 ? (
@@ -223,14 +236,19 @@ function MediaAdminCard({
   isMain?: boolean;
 }) {
   const src = mediaPublicUrl(item);
+  const facebookLink = item.external_url && isFacebookUrl(item.external_url) ? item.external_url : null;
 
   return (
     <li className="photo-frame overflow-hidden rounded-2xl">
       {item.media_type === "photo" && src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={item.caption || ""} className="h-40 w-full object-cover" />
+      ) : facebookLink ? (
+        <div className="grid h-40 place-items-center bg-cream px-4 text-center text-sm text-ink-soft">
+          Lien Facebook
+        </div>
       ) : (
-        <div className="grid h-40 place-items-center bg-[#2a211c] text-sm text-white">Vidéo</div>
+        <div className="grid h-40 place-items-center bg-[#2a211c] text-sm text-white">Vidéo importée</div>
       )}
       <div className="space-y-2 p-3">
         <form action={saveMediaMetaAction} className="space-y-2">

@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { slugify } from "@/lib/utils";
+import { isFacebookUrl } from "@/lib/media";
+import { mergeSettings, slugify } from "@/lib/utils";
 import { DEFAULT_SETTINGS, type DogSex, type DogStatus, type MediaCategory, type MediaType, type SiteContentKey, type SiteSettings } from "@/lib/types";
 
 async function requireAdmin() {
@@ -189,14 +190,14 @@ export async function saveSettingsAction(formData: FormData) {
     .eq("id", 1)
     .maybeSingle();
 
+  const currentSettings = mergeSettings(current?.data);
+
   const next: SiteSettings = {
-    ...DEFAULT_SETTINGS,
-    ...((current?.data as SiteSettings) ?? {}),
+    ...currentSettings,
     associationName: String(formData.get("associationName") ?? "").trim(),
     slogan: String(formData.get("slogan") ?? "").trim(),
     logoPath: emptyToNull(formData.get("logoPath")),
     heroMediaId: emptyToNull(formData.get("heroMediaId")),
-    biancaPhotoId: emptyToNull(formData.get("biancaPhotoId")),
     email: emptyToNull(formData.get("email")),
     facebookUrl: emptyToNull(formData.get("facebookUrl")),
     instagramUrl: emptyToNull(formData.get("instagramUrl")),
@@ -231,6 +232,67 @@ export async function saveSettingsAction(formData: FormData) {
 
   revalidatePublic();
   return { success: "Les paramètres ont été enregistrés." };
+}
+
+export async function saveBiancaPhotoAction(formData: FormData) {
+  const { supabase, error } = await requireAdmin();
+  if (!supabase) return { error: error ?? "La photo n’a pas pu être enregistrée." };
+
+  const { data: current } = await supabase
+    .from("site_settings")
+    .select("data")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const currentSettings: SiteSettings = {
+    ...DEFAULT_SETTINGS,
+    ...((current?.data as SiteSettings) ?? {}),
+  };
+  const previousPath = currentSettings.biancaPhotoPath;
+  const nextPath = emptyToNull(formData.get("biancaPhotoPath"));
+  const remove = formData.get("remove") === "1";
+
+  if (remove) {
+    if (previousPath) {
+      await supabase.storage.from("site-media").remove([previousPath]);
+    }
+    const next: SiteSettings = {
+      ...currentSettings,
+      biancaPhotoPath: null,
+      biancaPhotoId: null,
+    };
+    const { error: upsertError } = await supabase
+      .from("site_settings")
+      .upsert({ id: 1, data: next });
+    if (upsertError) {
+      return { error: "La photo n’a pas pu être retirée." };
+    }
+    revalidatePublic();
+    return { success: "La photo de Bianca a été retirée." };
+  }
+
+  if (!nextPath) {
+    return { error: "La photo n’a pas pu être enregistrée." };
+  }
+
+  if (previousPath && previousPath !== nextPath) {
+    await supabase.storage.from("site-media").remove([previousPath]);
+  }
+
+  const next: SiteSettings = {
+    ...currentSettings,
+    biancaPhotoPath: nextPath,
+    biancaPhotoId: null,
+  };
+  const { error: upsertError } = await supabase
+    .from("site_settings")
+    .upsert({ id: 1, data: next });
+  if (upsertError) {
+    return { error: "La photo n’a pas pu être enregistrée." };
+  }
+
+  revalidatePublic();
+  return { success: "La photo de Bianca a été enregistrée." };
 }
 
 export async function saveMediaMetaAction(formData: FormData): Promise<void> {
@@ -326,12 +388,22 @@ export async function reorderDogMediaAction(formData: FormData): Promise<void> {
   revalidatePublic();
 }
 
-export async function createExternalVideoAction(formData: FormData): Promise<void> {
-  const { supabase } = await requireAdmin();
-  if (!supabase) return;
+export async function createExternalVideoAction(
+  _prev: { error?: string; success?: string } | null,
+  formData: FormData,
+) {
+  const { supabase, error } = await requireAdmin();
+  if (!supabase) {
+    return { error: error ?? "Le lien n’a pas pu être enregistré." };
+  }
 
   const url = String(formData.get("external_url") ?? "").trim();
-  if (!url) return;
+  if (!url) {
+    return { error: "Collez l’adresse d’une publication ou d’une vidéo Facebook." };
+  }
+  if (!isFacebookUrl(url)) {
+    return { error: "Ce champ n’accepte que les liens Facebook." };
+  }
 
   const payload = {
     media_type: "video" as MediaType,
@@ -345,20 +417,23 @@ export async function createExternalVideoAction(formData: FormData): Promise<voi
   };
 
   const { error: insertError } = await supabase.from("media").insert(payload);
-  if (insertError) return;
+  if (insertError) {
+    return { error: "Le lien n’a pas pu être enregistré." };
+  }
 
   revalidatePublic();
+  return { success: "Le lien Facebook a été ajouté." };
 }
 
 function revalidatePublic() {
   revalidatePath("/", "layout");
   revalidatePath("/nos-proteges");
   revalidatePath("/adoptes");
-  revalidatePath("/bianca");
   revalidatePath("/nous-aider");
   revalidatePath("/admin");
   revalidatePath("/admin/chiens");
   revalidatePath("/admin/medias");
   revalidatePath("/admin/contenus");
   revalidatePath("/admin/parametres");
+  revalidatePath("/chiens", "layout");
 }

@@ -9,9 +9,8 @@ type HeaderProps = {
 
 const links = [
   { href: "/", label: "Accueil" },
-  { href: "/nos-proteges", label: "Nos protégés", emphasize: true },
-  { href: "/adoptes", label: "Adoptés" },
-  { href: "/bianca", label: "Bianca" },
+  { href: "/nos-proteges", label: "Nos protégés à adopter" },
+  { href: "/adoptes", label: "Nos protégés adoptés" },
   { href: "/nous-aider", label: "Nous aider" },
 ];
 
@@ -19,16 +18,14 @@ function Logo({ name, logoUrl }: { name: string; logoUrl: string | null }) {
   if (logoUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={logoUrl} alt={name} className="h-12 w-auto max-w-[220px] object-contain" />
+      <img src={logoUrl} alt={name} className="site-logo" />
     );
   }
 
   return (
-    <span className="font-serif text-[1.15rem] leading-tight text-bordeaux-deep sm:text-xl">
+    <span className="font-serif text-lg leading-tight text-nav-cream sm:text-xl">
       Les Protégés
-      <span className="block text-[0.92rem] font-normal italic text-ink-soft">
-        de Bianca
-      </span>
+      <span className="block text-[0.82rem] font-normal italic opacity-80">de Bianca</span>
     </span>
   );
 }
@@ -38,26 +35,20 @@ export async function Header({ current }: HeaderProps) {
   const logoUrl = siteMediaUrl(settings.logoPath);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-cream/90 backdrop-blur-sm">
-      <div className="container-page flex items-center justify-between gap-4 py-3">
-        <Link href="/" className="shrink-0" aria-label="Accueil — Les Protégés de Bianca">
+    <header className="site-header sticky top-0 z-40">
+      <div className="container-page flex items-center justify-between gap-4 py-1.5 md:py-2">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="Accueil — Les Protégés de Bianca">
           <Logo name={settings.associationName} logoUrl={logoUrl} />
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
+        <nav className="hidden items-center gap-3 lg:flex xl:gap-4" aria-label="Navigation principale">
           {links.map((link) => {
             const active = current === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-full px-3.5 py-2 text-[0.95rem] ${
-                  link.emphasize
-                    ? "bg-bordeaux text-white hover:bg-bordeaux-deep"
-                    : active
-                      ? "text-bordeaux-deep"
-                      : "text-ink-soft hover:text-bordeaux"
-                }`}
+                className={`site-nav-link ${active ? "is-active" : ""}`}
               >
                 {link.label}
               </Link>
@@ -75,7 +66,7 @@ function MobileNav({ current }: { current?: string }) {
   return (
     <details className="relative lg:hidden">
       <summary
-        className="flex h-11 w-11 list-none items-center justify-center rounded-full border border-line bg-paper text-ink"
+        className="flex h-11 w-11 list-none items-center justify-center rounded-full border border-white/35 text-nav-cream"
         aria-label="Ouvrir le menu"
       >
         <span className="sr-only">Menu</span>
@@ -85,17 +76,13 @@ function MobileNav({ current }: { current?: string }) {
           <span className="block h-0.5 w-3.5 bg-current" />
         </span>
       </summary>
-      <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-line bg-paper p-2 shadow-lg">
+      <div className="absolute right-0 z-50 mt-2 w-60 rounded-2xl border border-line bg-paper p-2 shadow-lg">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={`block rounded-xl px-3 py-3 ${
-              link.emphasize
-                ? "bg-bordeaux text-white"
-                : current === link.href
-                  ? "bg-powder-soft text-bordeaux-deep"
-                  : "text-ink"
+            className={`block rounded-xl px-3 py-3 text-[1.05rem] font-semibold ${
+              current === link.href ? "bg-raspberry text-white" : "text-bordeaux-deep"
             }`}
           >
             {link.label}
@@ -110,46 +97,41 @@ export async function Footer() {
   const settings = await getSettings();
 
   return (
-    <footer className="mt-16 border-t border-line bg-cream-deep/70">
-      <div className="container-page grid gap-8 py-12 md:grid-cols-[1.4fr_1fr]">
+    <footer className="site-footer mt-16">
+      <div className="container-page grid gap-8 py-10 md:grid-cols-[1.4fr_1fr] md:py-12">
         <div>
-          <p className="font-serif text-2xl text-bordeaux-deep">{settings.associationName}</p>
-          <p className="mt-1 italic text-ink-soft">{settings.slogan}</p>
+          <p className="font-serif text-2xl text-white">{settings.associationName}</p>
+          <p className="mt-1 italic text-nav-cream/80">{settings.slogan}</p>
           {settings.rna ? (
-            <p className="mt-3 text-sm text-muted">RNA {settings.rna}</p>
+            <p className="mt-3 text-sm text-nav-cream/70">RNA {settings.rna}</p>
           ) : null}
-          <p className="mt-4 max-w-xl text-[0.98rem] text-ink-soft">
+          <p className="mt-4 max-w-xl text-[0.98rem] text-nav-cream/85">
             {settings.adoptionLegalText ||
               "Les démarches d’adoption sont réalisées par notre association partenaire."}
           </p>
           {settings.partnerAssociationName ? (
-            <p className="mt-2 text-[0.98rem] text-ink-soft">
+            <p className="mt-2 text-[0.98rem] text-nav-cream/85">
               Association partenaire : {settings.partnerAssociationName}.
             </p>
           ) : null}
         </div>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-nav-cream/65">
             Aller vers
           </p>
           <ul className="mt-3 space-y-2">
             <li>
-              <Link href="/nos-proteges" className="hover:text-bordeaux">
-                Nos protégés
+              <Link href="/nos-proteges" className="hover:text-white">
+                Nos protégés à adopter
               </Link>
             </li>
             <li>
-              <Link href="/adoptes" className="hover:text-bordeaux">
-                Adoptés
+              <Link href="/adoptes" className="hover:text-white">
+                Nos protégés adoptés
               </Link>
             </li>
             <li>
-              <Link href="/bianca" className="hover:text-bordeaux">
-                Bianca
-              </Link>
-            </li>
-            <li>
-              <Link href="/nous-aider" className="hover:text-bordeaux">
+              <Link href="/nous-aider" className="hover:text-white">
                 Nous aider
               </Link>
             </li>
@@ -168,7 +150,7 @@ export async function Footer() {
               </li>
             ) : null}
           </ul>
-          <p className="mt-6 text-sm text-muted">
+          <p className="mt-6 text-sm text-nav-cream/65">
             Mentions légales et politique de confidentialité à venir.
           </p>
         </div>

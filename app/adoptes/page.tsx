@@ -5,7 +5,7 @@ import { EmptyDogs } from "@/components/dogs/DogFilter";
 import { getContent, getPublishedDogs } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Adoptés",
+  title: "Nos protégés adoptés",
   description: "Les protégés de Bianca qui ont trouvé leur famille.",
 };
 
@@ -21,7 +21,7 @@ export default async function AdoptesPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-raspberry">
           Familles trouvées
         </p>
-        <h1 className="mt-2 font-serif text-4xl sm:text-5xl">Ils ont trouvé leur famille</h1>
+        <h1 className="mt-2 font-serif text-4xl sm:text-5xl">Nos protégés adoptés</h1>
         <p className="mt-4 max-w-2xl text-lg text-ink-soft">
           {content.adopted_intro}
         </p>

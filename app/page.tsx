@@ -1,156 +1,112 @@
 import Link from "next/link";
 import { SiteShell } from "@/components/layout/SiteShell";
-import { DogCard } from "@/components/dogs/DogCard";
-import { HelpCards } from "@/components/help/HelpCards";
 import { PhotoFrame } from "@/components/media/PhotoFrame";
-import { VideoBlock } from "@/components/media/VideoBlock";
-import {
-  getContent,
-  getMediaById,
-  getPublishedDogs,
-  getRecentLifestyleMedia,
-  getSettings,
-} from "@/lib/data";
-import { imageAlt, mediaPublicUrl } from "@/lib/media";
+import { getBiancaHomePhoto, getContent, getMediaById, getSettings } from "@/lib/data";
+import { mediaPublicUrl } from "@/lib/media";
 
 export default async function HomePage() {
-  const [settings, content, dogs, lifestyle] = await Promise.all([
-    getSettings(),
-    getContent(),
-    getPublishedDogs({ statuses: ["available", "reserved"], limit: 6 }),
-    getRecentLifestyleMedia(6),
-  ]);
-  const [heroMedia, biancaPhoto] = await Promise.all([
-    getMediaById(settings.heroMediaId),
-    getMediaById(settings.biancaPhotoId),
-  ]);
-
-  const heroUrl = heroMedia ? mediaPublicUrl(heroMedia) : null;
-  const biancaUrl = biancaPhoto ? mediaPublicUrl(biancaPhoto) : null;
+  const [settings, content] = await Promise.all([getSettings(), getContent()]);
+  const biancaPhoto = await getBiancaHomePhoto(settings);
+  const heroPhoto = await getMediaById(settings.heroMediaId);
+  const heroUrl = heroPhoto ? mediaPublicUrl(heroPhoto) : null;
+  const presentation = content.bianca_presentation || content.bianca_excerpt;
+  const paragraphs = presentation
+    .replace(/\r\n/g, "\n")
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 
   return (
     <SiteShell current="/">
-      <section className="container-page mt-6 grid items-stretch gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="flex flex-col justify-center rounded-[1.8rem] bg-paper px-6 py-10 shadow-[0_10px_30px_rgba(70,42,32,0.06)] sm:px-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-raspberry">
-            Association
-          </p>
-          <h1 className="mt-3 font-serif text-4xl text-bordeaux-deep sm:text-5xl">
-            {content.hero_title || "Les Protégés de Bianca"}
-          </h1>
-          <p className="mt-3 font-serif text-xl italic text-ink-soft sm:text-2xl">
-            {content.hero_slogan || settings.slogan}
-          </p>
-          {content.hero_intro ? (
-            <p className="mt-5 max-w-xl text-ink-soft">{content.hero_intro}</p>
-          ) : null}
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/nos-proteges" className="btn btn-primary">
-              Découvrir nos protégés
-            </Link>
-            <Link href="/bianca" className="btn btn-ghost">
-              Découvrir Bianca
-            </Link>
+      <section className="home-banner" aria-label="Identité">
+        {heroUrl ? (
+          <div className="home-banner-media">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={heroUrl} alt="" />
           </div>
-        </div>
-        <div className="photo-frame min-h-[280px] overflow-hidden rounded-[1.8rem]">
-          <PhotoFrame
-            src={heroUrl}
-            alt={imageAlt(heroMedia?.caption, "Chez Bianca, avec les chiens")}
-            emptyLabel="Les photos arrivent bientôt."
-            className="h-full min-h-[280px] lg:min-h-[460px]"
-            imgClassName="object-cover"
-          />
-        </div>
-      </section>
-
-      {content.home_intro ? (
-        <section className="container-page mt-16 max-w-3xl">
-          <p className="prose-site text-lg text-ink-soft">{content.home_intro}</p>
-        </section>
-      ) : null}
-
-      <section className="container-page mt-16">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-serif text-3xl sm:text-4xl">À la recherche de leur famille</h2>
-          <Link href="/nos-proteges" className="btn btn-ghost">
-            Voir tous nos protégés
-          </Link>
-        </div>
-        {dogs.length === 0 ? (
-          <p className="text-ink-soft">Les fiches des protégés seront publiées ici.</p>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {dogs.map((dog) => (
-              <DogCard key={dog.id} dog={dog} />
-            ))}
-          </div>
+          <HomeBannerDecor />
         )}
+        <div className="container-page home-banner-copy">
+          <p className="home-banner-title">Des petits chiens, grandes histoires</p>
+          <p className="home-banner-kicker">Sauver · Soigner · Protéger · Offrir un avenir</p>
+        </div>
       </section>
 
-      <section className="container-page mt-16 grid items-center gap-8 lg:grid-cols-2">
-        <div className="photo-frame overflow-hidden rounded-[1.6rem]">
-          <PhotoFrame
-            src={biancaUrl}
-            alt={imageAlt(biancaPhoto?.caption, "Bianca avec ses protégés")}
-            emptyLabel="Les photos arrivent bientôt."
-            className="min-h-72"
-          />
-        </div>
+      <section
+        id="bianca"
+        className={`container-page mt-8 mb-16 scroll-mt-24 ${
+          biancaPhoto
+            ? "grid items-start gap-6 lg:mt-10 lg:grid-cols-[minmax(18rem,26rem)_minmax(0,1fr)] lg:gap-10"
+            : "mx-auto max-w-3xl lg:mt-10"
+        }`}
+      >
+        {biancaPhoto ? (
+          <div className="relative mx-auto w-full max-w-[24rem] lg:mx-0 lg:max-w-none">
+            <div className="home-photo-back" aria-hidden="true" />
+            <div className="photo-frame relative aspect-[3/4] overflow-hidden rounded-[1.6rem]">
+              <PhotoFrame
+                src={biancaPhoto.url}
+                alt={biancaPhoto.alt}
+                className="absolute inset-0 h-full w-full"
+                imgClassName="object-cover object-center"
+              />
+            </div>
+          </div>
+        ) : null}
         <div>
-          <h2 className="font-serif text-3xl sm:text-4xl">
-            {content.bianca_section_title || "Chez Bianca, ils apprennent la vie de famille."}
-          </h2>
-          {content.bianca_excerpt ? (
-            <p className="mt-4 text-lg text-ink-soft">{content.bianca_excerpt}</p>
+          <p className="mb-3 h-6 w-6 text-raspberry" aria-hidden="true">
+            <HeartMark />
+          </p>
+          <h1 className="font-serif text-[2.35rem] leading-[1.12] text-bordeaux-deep sm:text-5xl">
+            <span className="home-title-mark">Chez Bianca,</span>
+            <span className="mt-1 block italic text-[0.92em] text-bordeaux">en Roumanie</span>
+          </h1>
+          {paragraphs.length > 0 ? (
+            <div className="home-story mt-6 text-[1.08rem] leading-[1.8] text-ink">
+              {paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
           ) : null}
-          <Link href="/bianca" className="btn btn-primary mt-6">
-            Découvrir Bianca et son histoire
+          <Link href="/nos-proteges" className="home-cta mt-9">
+            Voir nos protégés à adopter
           </Link>
         </div>
-      </section>
-
-      <section className="container-page mt-16">
-        <h2 className="font-serif text-3xl sm:text-4xl">Leur quotidien chez Bianca</h2>
-        {lifestyle.length === 0 ? (
-          <div className="empty-photo mt-6 min-h-40 rounded-[1.4rem]">
-            <p>Les photos arrivent bientôt.</p>
-          </div>
-        ) : (
-          <div className="mt-6 columns-2 gap-3 sm:columns-3">
-            {lifestyle.map((item) => {
-              if (item.media_type === "video") {
-                return (
-                  <div key={item.id} className="mb-3 break-inside-avoid">
-                    <VideoBlock media={item} title={item.caption || "Vidéo du quotidien"} />
-                  </div>
-                );
-              }
-              const src = mediaPublicUrl(item);
-              if (!src) return null;
-              return (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={item.id}
-                  src={src}
-                  alt={imageAlt(item.caption, "Instant du quotidien chez Bianca")}
-                  className="mb-3 w-full break-inside-avoid rounded-xl"
-                />
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      <section className="container-page mt-16 mb-8">
-        <h2 className="font-serif text-3xl sm:text-4xl">Nous aider</h2>
-        {content.help_text ? (
-          <p className="mt-3 mb-8 max-w-2xl text-ink-soft">{content.help_text}</p>
-        ) : (
-          <div className="mb-8" />
-        )}
-        <HelpCards settings={settings} />
       </section>
     </SiteShell>
+  );
+}
+
+function HomeBannerDecor() {
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <span className="home-deco top-4 left-[6%] h-7 w-7">
+        <PawMark />
+      </span>
+      <span className="home-deco right-[7%] bottom-3 h-5 w-5">
+        <HeartMark />
+      </span>
+    </div>
+  );
+}
+
+function PawMark() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+      <circle cx="7" cy="6.5" r="2.1" />
+      <circle cx="12" cy="4.6" r="2.2" />
+      <circle cx="17" cy="6.5" r="2.1" />
+      <circle cx="19.2" cy="11" r="1.8" />
+      <ellipse cx="11.5" cy="16.2" rx="5.4" ry="4.2" />
+    </svg>
+  );
+}
+
+function HeartMark() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+      <path d="M12 20.4S4.8 15.5 2.7 11.7C1.3 9.1 2 5.8 4.8 4.6c2-.9 4.3-.1 7.2 2.8 2.9-2.9 5.2-3.7 7.2-2.8 2.8 1.2 3.5 4.5 2.1 7.1C19.2 15.5 12 20.4 12 20.4z" />
+    </svg>
   );
 }

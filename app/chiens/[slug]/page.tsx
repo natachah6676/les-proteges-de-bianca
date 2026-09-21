@@ -193,20 +193,16 @@ function AdoptionBlock({
     <section className="photo-frame mt-12 rounded-[1.5rem] p-6 sm:p-8">
       <h2 className="font-serif text-3xl">Vous souhaitez adopter {dog.name} ?</h2>
       <p className="mt-3 max-w-2xl text-ink-soft">{adoptionText}</p>
-      {adoptionUrl ? (
+      {adoptionUrl?.trim() ? (
         <a
-          href={adoptionUrl}
+          href={adoptionUrl.trim()}
           className="btn btn-primary mt-6"
           target="_blank"
           rel="noopener noreferrer"
         >
           Faire une demande d’adoption
         </a>
-      ) : (
-        <p className="mt-5 rounded-full border border-dashed border-line px-4 py-3 text-sm text-muted">
-          Bientôt disponible
-        </p>
-      )}
+      ) : null}
     </section>
   );
 }

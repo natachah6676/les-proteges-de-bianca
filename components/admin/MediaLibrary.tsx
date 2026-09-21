@@ -2,7 +2,7 @@
 
 import { deleteMediaAction, saveMediaMetaAction } from "@/lib/actions";
 import { MediaUploader } from "@/components/admin/MediaUploader";
-import { mediaPublicUrl } from "@/lib/media";
+import { isFacebookUrl, mediaPublicUrl } from "@/lib/media";
 import type { Dog, Media, MediaCategory } from "@/lib/types";
 
 const categories: Array<{ value: MediaCategory; label: string }> = [
@@ -38,9 +38,13 @@ export function MediaLibrary({
                 {item.media_type === "photo" && src ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={src} alt={item.caption || ""} className="h-36 w-full rounded-xl object-cover" />
+                ) : item.external_url && isFacebookUrl(item.external_url) ? (
+                  <div className="grid h-36 place-items-center rounded-xl bg-cream px-3 text-center text-sm text-ink-soft">
+                    Lien Facebook
+                  </div>
                 ) : (
                   <div className="grid h-36 place-items-center rounded-xl bg-[#2a211c] text-white">
-                    Vidéo
+                    Vidéo importée
                   </div>
                 )}
                 <form action={saveMediaMetaAction} className="grid gap-3 sm:grid-cols-2">

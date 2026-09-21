@@ -10,6 +10,7 @@ import {
   type SiteContentKey,
   type SiteSettings,
 } from "@/lib/types";
+import { imageAlt, mediaPublicUrl, siteMediaUrl } from "@/lib/media";
 import { mergeSettings } from "@/lib/utils";
 
 export async function getSettings(): Promise<SiteSettings> {
@@ -40,6 +41,18 @@ export async function getContent(): Promise<SiteContent> {
     }
   }
   return mapped;
+}
+
+export async function getBiancaHomePhoto(settings: SiteSettings) {
+  const fromPath = siteMediaUrl(settings.biancaPhotoPath);
+  if (fromPath) {
+    return { url: fromPath, alt: "Bianca" };
+  }
+
+  const item = await getMediaById(settings.biancaPhotoId);
+  const url = item ? mediaPublicUrl(item) : null;
+  if (!url) return null;
+  return { url, alt: imageAlt(item?.caption, "Bianca") };
 }
 
 export async function getMediaById(id: string | null | undefined) {

@@ -65,6 +65,7 @@ export type SiteSettings = {
   logoPath: string | null;
   heroMediaId: string | null;
   biancaPhotoId: string | null;
+  biancaPhotoPath: string | null;
   email: string | null;
   facebookUrl: string | null;
   instagramUrl: string | null;
@@ -106,6 +107,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   logoPath: null,
   heroMediaId: null,
   biancaPhotoId: null,
+  biancaPhotoPath: null,
   email: null,
   facebookUrl: null,
   instagramUrl: null,
