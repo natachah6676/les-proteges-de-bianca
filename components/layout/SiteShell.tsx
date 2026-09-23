@@ -105,6 +105,11 @@ export async function Footer() {
           {settings.rna ? (
             <p className="mt-3 text-sm text-nav-cream/70">RNA {settings.rna}</p>
           ) : null}
+          <p className="mt-2 text-sm">
+            <a href="mailto:lesprotegesdebianca@gmail.com" className="hover:text-white">
+              lesprotegesdebianca@gmail.com
+            </a>
+          </p>
           <p className="mt-4 max-w-xl text-[0.98rem] text-nav-cream/85">
             {settings.adoptionLegalText ||
               "Les démarches d’adoption sont réalisées par notre association partenaire."}
@@ -151,7 +156,13 @@ export async function Footer() {
             ) : null}
           </ul>
           <p className="mt-6 text-sm text-nav-cream/65">
-            Mentions légales et politique de confidentialité à venir.
+            <Link href="/mentions-legales" className="hover:text-white">
+              Mentions légales
+            </Link>
+            <span aria-hidden="true"> | </span>
+            <Link href="/confidentialite" className="hover:text-white">
+              Politique de confidentialité
+            </Link>
           </p>
         </div>
       </div>
