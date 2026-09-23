@@ -91,6 +91,22 @@ export function DogForm({
               />
               Date de naissance approximative
             </label>
+            <div className="sm:col-span-2">
+              <label className="admin-label" htmlFor="facebook_url">
+                Lien vers sa fiche / son album Facebook
+              </label>
+              <p className="mb-2 text-sm text-muted">
+                Lien vers l’album ou la publication Facebook consacrée à ce chien.
+              </p>
+              <input
+                id="facebook_url"
+                name="facebook_url"
+                type="url"
+                className="admin-input"
+                defaultValue={dog?.facebook_url ?? ""}
+                placeholder="https://www.facebook.com/..."
+              />
+            </div>
           </div>
         </section>
 
@@ -169,22 +185,6 @@ export function DogForm({
               <input type="checkbox" name="published" defaultChecked={dog?.published ?? true} />
               Publié sur le site
             </label>
-            <div className="sm:col-span-2">
-              <label className="admin-label" htmlFor="facebook_url">
-                Lien Facebook du chien
-              </label>
-              <p className="mb-2 text-sm text-muted">
-                Album, publication ou page Facebook consacrée à ce chien.
-              </p>
-              <input
-                id="facebook_url"
-                name="facebook_url"
-                type="url"
-                className="admin-input"
-                defaultValue={dog?.facebook_url ?? ""}
-                placeholder="https://www.facebook.com/..."
-              />
-            </div>
           </div>
         </section>
 

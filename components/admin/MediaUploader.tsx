@@ -1,13 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Media, MediaCategory } from "@/lib/types";
 import { validateMediaFile } from "@/lib/utils";
 import { isFacebookUrl, mediaPublicUrl } from "@/lib/media";
 import {
-  createExternalVideoAction,
   deleteMediaAction,
   reorderDogMediaAction,
   saveMediaMetaAction,
@@ -37,10 +36,6 @@ export function MediaUploader({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [facebookState, facebookAction, facebookPending] = useActionState(
-    createExternalVideoAction,
-    null,
-  );
 
   async function uploadFiles(files: FileList | null, kind: "photo" | "video") {
     if (!files?.length) return;
@@ -170,39 +165,12 @@ export function MediaUploader({
         </label>
       </div>
 
-      <form action={facebookAction} className="photo-frame rounded-2xl p-4">
-        <p className="admin-label">Lien Facebook (optionnel)</p>
-        <p className="mt-1 text-sm text-muted">
-          Pour une lecture fiable sur le site, préférez l’ajout d’un fichier MP4 ci-dessus.
-        </p>
-        {dogId ? <input type="hidden" name="dog_id" value={dogId} /> : null}
-        <input type="hidden" name="category" value={dogId ? "dog" : category} />
-        <label className="sr-only" htmlFor="external_url">
-          Lien Facebook
-        </label>
-        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-          <input
-            id="external_url"
-            name="external_url"
-            type="url"
-            className="admin-input"
-            placeholder="https://www.facebook.com/..."
-            required
-          />
-          <button type="submit" className="btn btn-ghost shrink-0" disabled={facebookPending}>
-            {facebookPending ? "Ajout…" : "Ajouter le lien"}
-          </button>
-        </div>
-      </form>
-
-      {error || facebookState?.error ? (
+      {error ? (
         <p className="text-sm text-[var(--danger)]" role="alert">
-          {error || facebookState?.error}
+          {error}
         </p>
       ) : null}
-      {message || facebookState?.success ? (
-        <p className="text-sm text-[var(--ok)]">{message || facebookState?.success}</p>
-      ) : null}
+      {message ? <p className="text-sm text-[var(--ok)]">{message}</p> : null}
       {busy ? <p className="text-sm text-muted">Envoi en cours…</p> : null}
 
       {existing.length === 0 ? (

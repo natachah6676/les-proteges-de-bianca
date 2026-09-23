@@ -117,16 +117,6 @@ function ImportedVideos({ items, dogName }: { items: Media[]; dogName: string })
   );
 }
 
-function FacebookButton({ name, url }: { name: string; url: string | null | undefined }) {
-  const href = url?.trim();
-  if (!href) return null;
-  return (
-    <a href={href} className="btn btn-ghost" target="_blank" rel="noopener noreferrer">
-      Voir {name} sur Facebook
-    </a>
-  );
-}
-
 export default async function DogPage({ params }: Props) {
   const { slug } = await params;
   const preview = await canPreview();
@@ -255,29 +245,40 @@ function SheetActions({
 }) {
   if (!showAdoption && !facebookUrl) return null;
 
-  const facebookButton = <FacebookButton name={dog.name} url={facebookUrl} />;
-
-  if (!showAdoption) {
-    return <div className="mt-8">{facebookButton}</div>;
-  }
-
   return (
     <section className="photo-frame mt-8 rounded-[1.5rem] p-6 sm:p-8">
-      <h2 className="font-serif text-3xl">Vous souhaitez adopter {dog.name} ?</h2>
-      <p className="mt-3 text-ink-soft">{adoptionText}</p>
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        {adoptionUrl?.trim() ? (
+      {showAdoption ? (
+        <>
+          <h2 className="font-serif text-3xl text-bordeaux-deep">Vous souhaitez adopter {dog.name} ?</h2>
+          <p className="mt-3 text-ink-soft">{adoptionText}</p>
+          {adoptionUrl?.trim() ? (
+            <a
+              href={adoptionUrl.trim()}
+              className="btn btn-primary mt-6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Faire une demande d’adoption
+            </a>
+          ) : null}
+        </>
+      ) : null}
+
+      {facebookUrl ? (
+        <div className={showAdoption ? "mt-8" : undefined}>
+          <h2 className={`font-serif text-bordeaux-deep ${showAdoption ? "text-2xl" : "text-3xl"}`}>
+            Vous voulez voir sa fiche sur Facebook ?
+          </h2>
           <a
-            href={adoptionUrl.trim()}
-            className="btn btn-primary"
+            href={facebookUrl}
+            className="btn btn-ghost mt-6"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Faire une demande d’adoption
+            Voir {dog.name} sur Facebook
           </a>
-        ) : null}
-        {facebookButton}
-      </div>
+        </div>
+      ) : null}
     </section>
   );
 }

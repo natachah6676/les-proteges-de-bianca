@@ -3,9 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isFacebookUrl } from "@/lib/media";
 import { mergeSettings, slugify } from "@/lib/utils";
-import { DEFAULT_SETTINGS, type DogSex, type DogStatus, type MediaCategory, type MediaType, type SiteContentKey, type SiteSettings } from "@/lib/types";
+import { DEFAULT_SETTINGS, type DogSex, type DogStatus, type MediaCategory, type SiteContentKey, type SiteSettings } from "@/lib/types";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -387,43 +386,6 @@ export async function reorderDogMediaAction(formData: FormData): Promise<void> {
   await supabase.from("media").update({ sort_order: index }).eq("id", other.id);
 
   revalidatePublic();
-}
-
-export async function createExternalVideoAction(
-  _prev: { error?: string; success?: string } | null,
-  formData: FormData,
-) {
-  const { supabase, error } = await requireAdmin();
-  if (!supabase) {
-    return { error: error ?? "Le lien n’a pas pu être enregistré." };
-  }
-
-  const url = String(formData.get("external_url") ?? "").trim();
-  if (!url) {
-    return { error: "Collez l’adresse d’une publication ou d’une vidéo Facebook." };
-  }
-  if (!isFacebookUrl(url)) {
-    return { error: "Ce champ n’accepte que les liens Facebook." };
-  }
-
-  const payload = {
-    media_type: "video" as MediaType,
-    external_url: url,
-    storage_path: null,
-    caption: emptyToNull(formData.get("caption")),
-    category: (emptyToNull(formData.get("category")) as MediaCategory | null) ?? "other",
-    dog_id: emptyToNull(formData.get("dog_id")),
-    sort_order: Number(formData.get("sort_order") || 0),
-    published: true,
-  };
-
-  const { error: insertError } = await supabase.from("media").insert(payload);
-  if (insertError) {
-    return { error: "Le lien n’a pas pu être enregistré." };
-  }
-
-  revalidatePublic();
-  return { success: "Le lien Facebook a été ajouté." };
 }
 
 function revalidatePublic() {
