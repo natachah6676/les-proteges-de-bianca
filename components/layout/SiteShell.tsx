@@ -82,7 +82,7 @@ function MobileNav({ current }: { current?: string }) {
             key={link.href}
             href={link.href}
             className={`block rounded-xl px-3 py-3 text-[1.05rem] font-semibold ${
-              current === link.href ? "bg-raspberry text-white" : "text-bordeaux-deep"
+              current === link.href ? "bg-raspberry text-white" : "mobile-nav-link"
             }`}
           >
             {link.label}

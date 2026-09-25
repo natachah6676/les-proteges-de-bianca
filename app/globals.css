@@ -168,6 +168,12 @@ video {
   color: #fff;
 }
 
+/* Hors couche Tailwind : sinon `a { color: inherit }` reprend le crème du header. */
+a.mobile-nav-link {
+  color: var(--bordeaux-deep);
+  opacity: 1;
+}
+
 .site-footer {
   background: var(--header);
   color: var(--nav-cream);
