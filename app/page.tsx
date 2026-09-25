@@ -69,9 +69,14 @@ export default async function HomePage() {
               ))}
             </div>
           ) : null}
-          <Link href="/nos-proteges" className="home-cta mt-9">
-            Voir nos protégés à adopter
-          </Link>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link href="/nos-proteges" className="home-cta">
+              Voir nos protégés à adopter
+            </Link>
+            <Link href="/nous-aider" className="home-cta">
+              Nous aider
+            </Link>
+          </div>
         </div>
       </section>
     </SiteShell>

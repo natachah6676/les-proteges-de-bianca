@@ -205,18 +205,6 @@ export async function saveSettingsAction(formData: FormData) {
     partnerAssociationName: String(formData.get("partnerAssociationName") ?? "").trim(),
     adoptionFormUrl: emptyToNull(formData.get("adoptionFormUrl")),
     donationUrl: emptyToNull(formData.get("donationUrl")),
-    donationsActive: formData.get("donationsActive") === "on",
-    sponsorshipUrl: emptyToNull(formData.get("sponsorshipUrl")),
-    sponsorshipActive: formData.get("sponsorshipActive") === "on",
-    supportUrl: emptyToNull(formData.get("supportUrl")),
-    supportActive: formData.get("supportActive") === "on",
-    donationButtonText:
-      String(formData.get("donationButtonText") ?? "").trim() || "Faire un don",
-    sponsorshipButtonText:
-      String(formData.get("sponsorshipButtonText") ?? "").trim() ||
-      "Parrainer / aider un protégé",
-    supportButtonText:
-      String(formData.get("supportButtonText") ?? "").trim() || "Soutenir l’association",
     adoptionLegalText: String(formData.get("adoptionLegalText") ?? "").trim(),
     rna: String(formData.get("rna") ?? "").trim(),
     maxPhotoSizeMb: Number(formData.get("maxPhotoSizeMb") || 10),

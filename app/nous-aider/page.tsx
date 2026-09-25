@@ -5,7 +5,7 @@ import { getContent, getSettings } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Nous aider",
-  description: "Soutenir Les Protégés de Bianca : don, parrainage, partage et suivi.",
+  description: "Soutenir Les Protégés de Bianca par un don.",
 };
 
 export default async function NousAiderPage() {

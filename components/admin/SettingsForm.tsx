@@ -157,37 +157,16 @@ export function SettingsForm({
 
       <section className="photo-frame rounded-2xl p-5">
         <h2 className="font-serif text-2xl">Nous aider</h2>
-        <p className="mt-1 text-sm text-muted">
-          Laissez inactif tant qu’il n’y a pas encore de lien. Aucun paiement n’est géré par le site.
-        </p>
-        <div className="mt-4 space-y-5">
-          <HelpAction
-            activeName="donationsActive"
-            activeDefault={settings.donationsActive}
-            textName="donationButtonText"
-            textLabel="Texte du bouton Don"
-            textDefault={settings.donationButtonText}
-            urlName="donationUrl"
-            urlDefault={settings.donationUrl ?? ""}
+        <div className="mt-4 max-w-xl">
+          <Field
+            id="donationUrl"
+            label="Lien pour faire un don"
+            type="url"
+            defaultValue={settings.donationUrl ?? ""}
           />
-          <HelpAction
-            activeName="sponsorshipActive"
-            activeDefault={settings.sponsorshipActive}
-            textName="sponsorshipButtonText"
-            textLabel="Texte du bouton Parrainage"
-            textDefault={settings.sponsorshipButtonText}
-            urlName="sponsorshipUrl"
-            urlDefault={settings.sponsorshipUrl ?? ""}
-          />
-          <HelpAction
-            activeName="supportActive"
-            activeDefault={settings.supportActive}
-            textName="supportButtonText"
-            textLabel="Texte du bouton Soutien"
-            textDefault={settings.supportButtonText}
-            urlName="supportUrl"
-            urlDefault={settings.supportUrl ?? ""}
-          />
+          <p className="mt-2 text-sm text-muted">
+            Lien vers la cagnotte ou la page de don HelloAsso.
+          </p>
         </div>
       </section>
 
@@ -244,33 +223,3 @@ function Field({
   );
 }
 
-function HelpAction({
-  activeName,
-  activeDefault,
-  textName,
-  textLabel,
-  textDefault,
-  urlName,
-  urlDefault,
-}: {
-  activeName: string;
-  activeDefault: boolean;
-  textName: string;
-  textLabel: string;
-  textDefault: string;
-  urlName: string;
-  urlDefault: string;
-}) {
-  return (
-    <div className="rounded-xl bg-cream p-4">
-      <label className="flex items-center gap-2 text-sm font-semibold">
-        <input type="checkbox" name={activeName} defaultChecked={activeDefault} />
-        Activer ce bouton
-      </label>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <Field id={textName} label={textLabel} defaultValue={textDefault} />
-        <Field id={urlName} label="URL" type="url" defaultValue={urlDefault} />
-      </div>
-    </div>
-  );
-}
