@@ -201,6 +201,7 @@ export async function saveSettingsAction(formData: FormData) {
     email: emptyToNull(formData.get("email")),
     facebookUrl: emptyToNull(formData.get("facebookUrl")),
     instagramUrl: emptyToNull(formData.get("instagramUrl")),
+    tiktokUrl: emptyToNull(formData.get("tiktokUrl")),
     partnerAssociationName: String(formData.get("partnerAssociationName") ?? "").trim(),
     adoptionFormUrl: emptyToNull(formData.get("adoptionFormUrl")),
     donationUrl: emptyToNull(formData.get("donationUrl")),

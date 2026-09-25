@@ -123,6 +123,7 @@ export function SettingsForm({
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field id="facebookUrl" label="Facebook" type="url" defaultValue={settings.facebookUrl ?? ""} />
           <Field id="instagramUrl" label="Instagram" type="url" defaultValue={settings.instagramUrl ?? ""} />
+          <Field id="tiktokUrl" label="TikTok" type="url" defaultValue={settings.tiktokUrl ?? ""} />
         </div>
       </section>
 

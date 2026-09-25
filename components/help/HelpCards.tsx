@@ -106,7 +106,17 @@ export function ShareAndFollow({ settings }: { settings: SiteSettings }) {
               Instagram
             </a>
           ) : null}
-          {!settings.facebookUrl && !settings.instagramUrl ? (
+          {settings.tiktokUrl ? (
+            <a
+              href={settings.tiktokUrl}
+              className="btn btn-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              TikTok
+            </a>
+          ) : null}
+          {!settings.facebookUrl && !settings.instagramUrl && !settings.tiktokUrl ? (
             <p className="text-sm text-muted">Les liens seront ajoutés dans l’administration.</p>
           ) : null}
         </div>

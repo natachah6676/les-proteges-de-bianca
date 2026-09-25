@@ -70,6 +70,7 @@ export type SiteSettings = {
   email: string | null;
   facebookUrl: string | null;
   instagramUrl: string | null;
+  tiktokUrl: string | null;
   partnerAssociationName: string;
   adoptionFormUrl: string | null;
   donationUrl: string | null;
@@ -112,6 +113,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   email: null,
   facebookUrl: null,
   instagramUrl: null,
+  tiktokUrl: null,
   partnerAssociationName: "Les Pattes Oubliées",
   adoptionFormUrl: null,
   donationsActive: false,

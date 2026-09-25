@@ -154,6 +154,13 @@ export async function Footer() {
                 </a>
               </li>
             ) : null}
+            {settings.tiktokUrl ? (
+              <li>
+                <a href={settings.tiktokUrl} target="_blank" rel="noopener noreferrer">
+                  TikTok
+                </a>
+              </li>
+            ) : null}
           </ul>
           <p className="mt-6 text-sm text-nav-cream/65">
             <Link href="/mentions-legales" className="hover:text-white">
